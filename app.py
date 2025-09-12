@@ -7,8 +7,17 @@ from src.ai.analyzer import CryptoAnalyzer
 from src.database.connection import init_db
 from src.ui.theme import apply_theme
 
+from src.auth.authentication import create_user, verify_user, get_user_id
+
 load_dotenv()
 
+def init_session_state():
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+    if "username" not in st.session_state:
+        st.session_state.username = None
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = None
 
 def main():
     init_db()
@@ -21,36 +30,11 @@ def main():
     )
 
     apply_theme()
-
-    st.title("🚀 Crypto AI Analyst")
-    st.write("Ask anything about crypto prices and news.")
-
-    # Display history
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-
-    # Handle new user input
-    if prompt := st.chat_input("Ask about any cryptocurrency..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-
-        with st.chat_message("assistant"):
-            history = []
-            for m in st.session_state.messages[:-1]:
-                if m["role"] == "user":
-                    history.append(HumanMessage(content=m["content"]))
-                else:
-                    history.append(AIMessage(content=m["content"]))
-
-            response, _, _, _ = st.session_state.analyzer.analyze(prompt, history)
-            st.markdown(response)
-
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "analyzer" not in st.session_state:
-        st.session_state.analyzer = CryptoAnalyzer()
+    
+    if not st.session_state.authenticated:
+        render_auth_page()
+    else:
+        render_chat_page()
 
 if __name__ == "__main__":
     main()
