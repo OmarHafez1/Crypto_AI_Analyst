@@ -6,6 +6,7 @@ from src.ai.analyzer import CryptoAnalyzer
 
 from src.database.connection import init_db
 from src.ui.theme import apply_theme
+from src.ui.chat_page import render_chat_page
 
 from src.auth.authentication import create_user, verify_user, get_user_id
 
@@ -29,8 +30,10 @@ def main():
         initial_sidebar_state="expanded",
     )
 
+
     apply_theme()
-    
+    init_session_state()
+
     if not st.session_state.authenticated:
         render_auth_page()
     else:
