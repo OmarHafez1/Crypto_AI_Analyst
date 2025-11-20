@@ -1,2 +1,10 @@
 streamlit
 python-dotenv
+requests
+psycopg2-binary
+bcrypt
+pandas
+
+# LangChain + Gemini
+langchain-core>=0.3,<0.4
+langchain-google-genai>=1.0,<2.0
